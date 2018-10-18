@@ -1,46 +1,30 @@
 #!/usr/bin/python
-import numpy as np
-import matplotlib.pyplot as mp
+from explore import key, db
+from prepare import znorm
+from implement import buildX, svd, reduct
+from tools import get_k
+from plot import var_plot, pc_plot
 
-from explore import key, explore, key
-from prepare import keylong, prepare, stats, randsplitnorm, seestats
-from tools import auto, error, topcombo, counthits, initdball, bestcombo, findball
-from output import print_results, print_max
+####### PART 1: Principal Component Analysis ####################
+# preparation
+bools = [True, False]
+norm = bools[0] # normalize bool
+see  = bools[1] # show figures bool
+pvar = 0.9 # percent of variance captured by k singular values
+if norm:
+    db = znorm() # z-normalize
 
-norms = ['no', 'tog', 'dtog', 'sep', 'dsep']
-norm  = norms[1]
-[dbraw, bad_entry] = explore()
-db = prepare(dbraw, bad_entry)
-dbstats = stats(db, keylong)
-mpgmean = list(dbstats['mpg']['mean'])[0]
-mpgstd = list(dbstats['mpg']['std'])[0]
+# finding reduced dimensions
+[U, S, Vh] = svd(db) # perform SVD
+k = get_k(S, pvar) # find k singular values that satisfies pvar
 
-# print(db)
-# xinp  = range(1,8)
-xinp = [4, 6]
-unk   = 0
-order = 2
-topN  = 1
-Iters = 1000
-tests = 10
+# reducing dimensions
+X  = buildX(db) # create data matrix
+Xk = reduct(U, S, Vh, k) # reduced order matrix
 
-for j in range(tests):
-#     print(db)
-    errmean  = 0
-    keycount = np.zeros(len(key))
-    dball = initdball()
-    for i in range(Iters):
-        [dbraw, bad_entry] = explore()
-        db = prepare(dbraw, bad_entry)
-        [dbtrain, dbtest] = randsplitnorm(db, norm)
-        [F, R] = auto(dbtrain, dbtest, xinp, unk, order, norm)
-        dberr  = error(dbtest, F, R, norm, mpgmean, mpgstd)
-        dbtop  = topcombo(dberr, topN)
-        errmean  = errmean + np.mean(dbtop['err'])
-        keycount = keycount + counthits(dbtop)
-        dball = bestcombo(dbtop['fts'][0], dbtop['err'][0], dball)
-    errmean  = errmean/(Iters)
-    keycount = keycount/(topN*Iters)
-    dbmax = findball(dball)
-    print_results(order, Iters, topN, norm, errmean, keycount)
-    print_max(order, Iters, topN, norm, dbmax)
+# plotting
+var_plot(S,k,see) # scree, var vs eigens
+pc_plot(S,U,see) # first and second pc's scaled by sigma
+
+####### PART 2: k-Means Clustering ##############################
+
