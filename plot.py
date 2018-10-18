@@ -2,7 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as mp
 
-def var_plot(S,k,see):
+def var_plot(S,k,normstr,see):
     from tools import percent_var
     # get percent of variance for k singular values
     PV = percent_var(S)
@@ -32,13 +32,13 @@ def var_plot(S,k,see):
     fig.tight_layout()
 
     # save fig and view
-    figname = 'varplot.png'
+    figname = 'plots/var' + normstr + '.png'
     mp.savefig(figname)
     if see:
         os.system('see ' + figname)
 #     mp.show()
 
-def pc_plot(S,U,see):
+def pc_plot(S,U,normstr,see):
     # get 1st and 2nd principal components
     W1 = S[0]*U[:,0]
     W2 = S[1]*U[:,1]
@@ -62,15 +62,13 @@ def pc_plot(S,U,see):
     fig.tight_layout()
 
     # save fig and view 
-    figname = 'pcplot.png' 
+    figname = 'plots/pc' + normstr + '.png' 
     mp.savefig(figname)
     if see: # open png in preview
         os.system('see ' + figname) # see not included
 #     mp.show()
 
-def pcc_plot(S,U,C,see):
-    # get 1st and 2nd principal components
-
+def pcc_plot(S,U,C,normstr,kstr,see):
     # prepare to plot
     fig = mp.figure() # make fig
     ax = fig.add_subplot(111) # make axes
@@ -91,7 +89,7 @@ def pcc_plot(S,U,C,see):
     fig.tight_layout()
 
     # save fig and view 
-    figname = 'pcplot.png' 
+    figname = 'plots/pcc' + normstr + kstr + '.png' 
     mp.savefig(figname)
     if see: # open png in preview
         os.system('see ' + figname) # see not included
