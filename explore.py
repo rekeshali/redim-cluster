@@ -13,7 +13,7 @@ import csv
 dbraw = {}
 filename = 'data/UTK-peers.csv'
 # filename = 'data/IPEDS-big-trimmed.csv'
-with open(filename) as csv_file:
+with open(filename) as csv_file: # create dict of all attributes
     csv_reader = csv.reader(csv_file)
     line_count = 0
     for row in csv_reader:
@@ -27,8 +27,7 @@ with open(filename) as csv_file:
                 dbraw[keyraw[idx]].append(item)
         line_count += 1
 
-
-db = {}
+db = {} # dict containing numerical attributes 
 key = []
 for tooth in keyraw[4:]:
     db[tooth] = []
@@ -38,10 +37,11 @@ for tooth in keyraw[4:]:
         if is_num(item):
             db[tooth].append(float(item))
         else:
-            del db[tooth]
+            del db[tooth] # one non numerical entries/no entry disqualifies the attribute from the dict
             del key[-1]
             break
-for tooth in key:
+
+for tooth in key: # averages double listings 
     if len(db[tooth]) > len(dbraw['N']):
         for idx in range(0, len(db[tooth]), 2):
             mean = (db[tooth][idx] + db[tooth][idx+1])/2

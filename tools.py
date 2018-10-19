@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # build a matrix from dict
 def buildX(db):
     import numpy as np

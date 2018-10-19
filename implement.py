@@ -1,4 +1,5 @@
 #### PCA Stuff ####
+# singular value decomposition
 def svd(db):
     from tools import buildX
     from scipy import linalg as la
@@ -6,6 +7,7 @@ def svd(db):
     [U,S,Vh] = la.svd(X)
     return U,S,Vh
 
+# reduced order reconstruction of data
 def reduct(U,S,Vh,k):
     import numpy as np
     from tools import diag
@@ -17,6 +19,7 @@ def reduct(U,S,Vh,k):
     return X
 
 #### Clustering ####
+# kmeans classification driver
 def kmeans(k,X):
     import numpy as np
     key = list(map(str,range(k)))
@@ -38,6 +41,7 @@ def kmeans(k,X):
 #     C = update_cluster(key,X,Mmean)
     return C,i
 
+# random assignment of initial cluster means
 def init_means(k,X):
     import random
     import numpy as np
@@ -49,12 +53,12 @@ def init_means(k,X):
         M = np.vstack((M,X[idx,:]))
     return M
 
+# checks each point for nearest cluster and assigns to minimum distance to a clusters mean
 def update_cluster(key,X,M):
     import numpy as np
-    C = {}
+    C = {} # clusters are contained in a dict
     for tooth in key:
         C[tooth] = []
-
     for n,row in enumerate(X): # for all instances
         min_dist = float('inf')
         for m,row_mean in enumerate(M): # check against mean of every cluster
@@ -65,6 +69,7 @@ def update_cluster(key,X,M):
         C[str(clust)].append(n)
     return C
 
+# once reassigned, cluster means are recalculated
 def update_means(key,X,M,C):
     import numpy as np
     nfeat = M.shape[1]
